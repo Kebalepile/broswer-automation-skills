@@ -14,7 +14,8 @@ driver.set_window_size(678, 700)
 driver.get('https://techstepacademy.com/trial-of-the-stones')
 
 
-def quit_driver(seconds = 3):
+def quit_driver(seconds=3):
+
     sleep(seconds)
     driver.quit()
 
@@ -43,37 +44,38 @@ def activate_driver():
 
         msg = driver.find_element_by_xpath('//div[@id="successBanner1"]/h4')
 
-        if msg.text == 'Success!':
-            print("hi")
-            names = [
-                s.text for s in driver.find_elements_by_xpath('//div/span')]
-            wealth = [int(n.text)
-                      for n in driver.find_elements_by_xpath('//div/span/../p')]
-            max_amt = reduce(lambda a, b: a if a > b else b, wealth)
+        assert msg.text == 'Success!'
+        
+        names = [
+            s.text for s in driver.find_elements_by_xpath('//div/span')]
+        wealth = [int(n.text)
+                    for n in driver.find_elements_by_xpath('//div/span/../p')]
+        max_amt = reduce(lambda a, b: a if a > b else b, wealth)
 
-            for n, w in zip(names, wealth):
-                if w == max_amt:
-                    driver.find_element_by_id('r3Input').send_keys(n)
-                    driver.find_element_by_id('r3Butn').click()
-                    break
+        for n, w in zip(names, wealth):
+            if w == max_amt:
+                driver.find_element_by_id('r3Input').send_keys(n)
+                driver.find_element_by_id('r3Butn').click()
+                break
 
-            wait_until(EC.visibility_of_element_located(
-                (By.ID, 'successBanner2')))
+        wait_until(EC.visibility_of_element_located(
+            (By.ID, 'successBanner2')))
 
-            msg2 = driver.find_element_by_id('successBanner2')
+        msg2 = driver.find_element_by_id('successBanner2')
 
-            if msg2.text == 'Success!':
-                driver.find_element_by_id('checkButn').click()
-                wait_until(EC.visibility_of_element_located(
-                    (By.ID, 'trialCompleteBanner')))
-                msg3 = driver.find_element_by_xpath(
-                    '//div[@id="trialCompleteBanner"]/h4')
-                if msg3.text == 'Trial Complete':
-                    print("Mission accomplished soulja")
-                    quit_driver(5)
-        else:
-            print('mission failed.')
-            quit_driver()
+        assert msg2.text == 'Success!'
+
+        driver.find_element_by_id('checkButn').click()
+        wait_until(EC.visibility_of_element_located(
+            (By.ID, 'trialCompleteBanner')))
+        msg3 = driver.find_element_by_xpath(
+            '//div[@id="trialCompleteBanner"]/h4')
+
+        assert msg3.text == 'Trial Complete'
+        
+        print("Mission accomplished soulja")
+        quit_driver(5)
+        
 
     except err.NoSuchElementException:
         print('Did not find element you were looking for.')
